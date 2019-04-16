@@ -1,78 +1,141 @@
-//Globals
-
-var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG'
-var qObj = function (_term, _apiKey = '', _rating = '', _limit = 0, _offset = 0) {
+var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
+    currentOffset = 0,
+    currentOffsetAdder = 10,
+    searchterm,
+    crurrentPage = 0,
+        qObj = function (_term, _apiKey = '', _rating = '', _limit = 0, _offset = 0) {
             
-    return { 
-        api_key: _apiKey == '' ? apiKey : _apiKey,
-        q: _term,
-        limit: _limit > 0 ? _limit : 25,
-        offset: _offset,
-        rating: _rating 
-        
-    }
-}
-var metaResponseMsg = {
+            return { 
+                    api_key: _apiKey == '' ? apiKey : _apiKey,
+                    q: _term,
+                    limit: _limit > 0 ? _limit : 25,
+                    offset: _offset,
+                    rating: _rating 
+                    }
+        },
+        metaResponseMsg = {
     200: 'OK Your request was successful.',
     400: 'Bad Request Your request was formatted incorrectly or missing required parameters.',
     403: 'Forbidden You weren \'t authorized to make your request; most likely this indicates an issue with your API Key.',
     404: 'Not Found The particular GIF you are requesting was not found.This occurs, for example, if you request a GIF by an id that does not exist.',
     429: 'Too Many Requests Your API Key is making too many requests.Read about requesting a Production Key to upgrade your API Key rate limits.'
-}
-var endPoints = function () {
-    return {
-        protocal: 'http://',
-        protocalSecure: 'https://',
-        host: 'api.giphy.com',
-        path: '/v1',
-        createEndpoint: function (_endpoint = '', _protocal = '', ) {
-            var p = _protocal == '' ? this.protocalSecure : _protocal,
-                h = this.host,
-                pt = this.path,
-                ep = _endpoint == '' ? this.search : _endpoint
-            return p + h + pt + ep
-        
         },
-        search: '/gifs/search', //GET Search Endpoint
-        trending: '/gifs/trending', // GET Trending GIFs Endpoint
-        randomid: '/randomid', // GET Random Id Endpoint
-        translate: '/gifs/translate',  // GET Translate Endpoint
-        random: '/gifs/random',  // GET Random Endpoint
-        gifid: function (gif_id) { return '/gifs/' + gif_id }, // { gif_id } GET Get GIF by ID Endpoint
-        gifs: '/gifs',  //GET Get GIFs by ID Endpoint
-        stickerSearch: '/stickers/search', //GET Sticker Search Endpoint
-        stickersTrending: '/stickers/trending', // GET Trending Stickers Endpoint
-        stickersTranslate: '/stickers/translate', // GET Sticker Translate Endpoint
-        stickersRandom: '/stickers/random' // GET  Random Sticker Endpoint
+        endPoints = function () {
+                    return {
+                    protocal: 'http://',
+                    protocalSecure: 'https://',
+                    host: 'api.giphy.com',
+                    path: '/v1',
+                    createEndpoint: function (_endpoint = '', _protocal = '', ) {
+                            var p = _protocal == '' ? this.protocalSecure : _protocal,
+                                h = this.host,
+                                pt = this.path,
+                                ep = _endpoint == '' ? this.search : _endpoint
+                                return p + h + pt + ep
+        
+                    },
+                    search: '/gifs/search', //GET Search Endpoint
+                    trending: '/gifs/trending', // GET Trending GIFs Endpoint
+                    randomid: '/randomid', // GET Random Id Endpoint
+                    translate: '/gifs/translate',  // GET Translate Endpoint
+                    random: '/gifs/random',  // GET Random Endpoint
+                    gifid: function (gif_id) { return '/gifs/' + gif_id }, // { gif_id } GET Get GIF by ID Endpoint
+                    gifs: '/gifs',  //GET Get GIFs by ID Endpoint
+                    stickerSearch: '/stickers/search', //GET Sticker Search Endpoint
+                    stickersTrending: '/stickers/trending', // GET Trending Stickers Endpoint
+                    stickersTranslate: '/stickers/translate', // GET Sticker Translate Endpoint
+                    stickersRandom: '/stickers/random' // GET  Random Sticker Endpoint
+                    }
+            }
+        topics = [{name:'coding',rating:'',currentPage:0},{name:'smiles',rating:'',currentPage:0},{name:'math',rating:'',currentPage:0}]
+        ratings = {  'Y':'lightgreen',
+                     'G': 'green',
+                     'PG': 'darkgreen',
+                     'PG-13':'yellow',
+                     'R':'red'
+                },
+        textColors = {  'lightgreen' :'white',
+                'green': 'white',
+                'darkgreen': 'white',
+                'yellow':'black',
+                'red':'white',
+                'blue':'white'
+                }
+
+$(document).ready(function () {
+    clear()
+    createTopics()
+    
+    $('#add').click(function (event) {
+        event.preventDefault()
+       var _name = $('#q').val()
+       var _rating = $('#rating').val()
+       if(_rating === 'all'){
+           _rating = '';
+       }
+        var newTopic = {name: _name, rating: _rating, currentPage:0}
+        topics.push(newTopic)
+        createTopics()
+    })
+
+
+   
+
+})
+function increasePage(name){
+    
+}
+function createTopics(){   
+    $('#topics').empty()
+    var topicsLength = topics.length
+    for(let i=0; i < topicsLength; i++){
+        var topicButton = $('<button>')
+        var rating = topics[i].rating
+        color = 'blue'
+        if(rating){
+           color = ratings[rating];
+        }
+        $(topicButton).addClass('topicButton')
+        $(topicButton).addClass('btn')
+        $(topicButton).data({'currentPage':0})
+        $(topicButton).data({'rating': topics[i].rating })
+        $(topicButton).css({'background-color':color, color: 'white'})
+        $(topicButton).data({'name':topics[i].name})
+        $(topicButton).addClass('ml-1')
+        $(topicButton).text(topics[i].name.toUpperCase())
+        var span = $('<span>')
+        $(span).html('<span> </span><i class="far fa-times-circle"></i>')
+        $(span).click(function (event) {
+            event.preventDefault()
+            
+            q = $(event.target.parentNode.parentNode)
+            $(q).remove();
+            
+        })
+        $(topicButton).append(span)
+        $(topicButton).click(function (event) {
+            event.preventDefault()
+            var q = '',
+                rating = ''
+            
+            rating = $(event.target).data('rating')
+            
+            q = $(event.target).data('name')
+            currentPage = $(event.target).data('currentPage')
+            if(rating == 'all'){
+                rating = ''
+            }
+        
+            search(q,rating,currentPage)
+        
+        })
+        $('#topics').append(topicButton)
     }
 }
-
-var currentOffset = 0;
-var currentOffsetAdder = 10;
-var searchterm;
-var crurrentPage = 1;
-$(document).ready(function () {
-    var cardCol = $('#img-cards')
-    init()
-    $('#search').click(function (event) {
-        event.preventDefault()
-        var q = ''
-        q = $('#q').val()
-        if (searchterm != q) {
-            init()
-            currentPage = 0
-            searchterm = q
-        } 
-        search(q)
-    })
-    
-function init(){
-    
-    $(cardCol).empty()
-    
- 
-}
-
+function clear(){
+    $('#img-cards').empty()
+    $('#topics').empty()
+ }
 function createCard(_gifObj, _title, _text, _link){
 
     var card = $('<div>'),
@@ -88,7 +151,12 @@ function createCard(_gifObj, _title, _text, _link){
     }, function () {
         $(cardImg).attr('src', _gifObj.still)
     })
+    var color = ratings[_gifObj.rating] 
+ 
+    var textColor = textColors[color]
     $(carBody).addClass('card-body')
+    $(carBody).css({'background-color':color})
+    $(carBody).css({'color':textColor})
     $(cardTitle).addClass('card-title').text(_title)
     $(imageLink).append(cardTitle)
     if (_text != '') {
@@ -97,79 +165,23 @@ function createCard(_gifObj, _title, _text, _link){
     }
     return  $(card).append(cardImg).append(carBody)
 }
-
-function createPagination(_paginationObj, _currentPage,) {
-    /*
-< nav aria-label = "..." >
-    <ul class = "pagination" >
-    <li class = "page-item disabled" >
-    <a class = "page-link" href = "#" tabindex = "-1" aria-disabled = "true" > Previous < /a> </li>
-    <li class = "page-item" > < a class = "page-link" href = "#" > 1 < /a></li >
-    <li class = "page-item active" aria-current = "page" ><a class = "page-link" href = "#" > 2 < span class = "sr-only" > (current) < /span></a >
-    </li> 
-    <li class = "page-item" > < a class = "page-link" href = "#" > 3 < /a></li >
-    <li class = "page-item" >
-    <a class = "page-link" href = "#" > Next < /a> 
-    </li> </ul> </nav>
-
-*/
-    var numberOfPages = _paginationObj.total_count
-    var numberOnPage = _paginationObj.count
-    var currentOffset = _paginationObj.offset
-    var currentPage = _currentPage
-    var LastPage = numberOfPages
-    var FirstPage = 1
-    var isMoreNextPages = _currentPage + currentOffset < LastPage ? true : false
-    var isMorePrevPages = _currentPage - currentOffset > FirstPage ? true : false
-    var paginationArea = $('#paginationArea')
-    $(paginationArea).empty()
-    var nav = $('<nav>')
-    $(nav).attr('aria-lable', 'search results')
-    var ul = $('<ul>')
-    $(ul).addClass('pagination')
-    if (isMorePrevPages) {
-        for (let frontlinks = currentPage; frontlinks < currentPage - currentOffset; frontlinks++) {
-            var li = $('<li>')
-            $(li).addClass('page-item')
-            if (currentPage == frontlinks) {
-                $(li).addClass('active')
-                $(li).attr('aria-current', 'page')
-            }
-            var span = $('<span>')
-            $(span).
-
-        }
-    }
-  
-
-$('.page-link').click(function (event) {
-    event.preventDefault()
-    $('#search-results').empty()
-    crurrentPage = parseInt($(event.target).val())
-     search(q)
-})
-
-    
-}
-function search(q) {
+function search(q,rating,numToReturn) {
       
-    var queryObj = new qObj(q, '', '', currentOffsetAdder, crurrentPage)
-      var ep = new endPoints();
-      var url = ep.createEndpoint('', 'http://')
+        var queryObj = new qObj(q, '', rating, 10, numToReturn)
+        var ep = new endPoints();
+        var url = ep.createEndpoint('', 'http://')
+       
     $.ajax({
-        type: method,
-        url: endpoint,
+        type: "GET",
+        url: url,
         data: queryObj,
     }).then(function (response) {
         console.log(response)
         var data = response.data,
             pagination = response.pagination,
             meta = response.meta
-        if (meta.msg == 'ok') {
-            if (pagination) {
-                createPagination(pagination)
-            }
-            
+        if (meta.msg == 'OK') {
+                       
              var dataLength = data.length
              for (let i = 0; i < dataLength; i++) {
                  var stillImage = data[i].images.fixed_width_still.url
@@ -181,9 +193,19 @@ function search(q) {
                  var link = data[i].url
                  var title = data[i].title
                  var card = createCard(gifObj, title, 'Download', link)
+                              
                  $('#img-cards').prepend(card)
              }
 
+        }else{
+            $('#errors').empty()
+            var message = metaResponseMsg[meta.status]
+            var error = $('<div>')
+            $(error).addClass('alert')
+            $(error).addClass('alert-danger')
+            $(error).attr('role','alert')
+            $(error).text(message)
+            $('#errors').append(error)
         }
 
 
@@ -194,4 +216,3 @@ function search(q) {
     
 }
 
-})
