@@ -41,9 +41,9 @@ body{
     transition: transform 0.8s;
     transform-style: preserve-3d;
 }
-.flip-photo:hover .flip-photo-inner {
+.flip .flip-photo-inner {
     transform: rotateY(180deg);
-  }
+}
 
 .flip-photo-front, .flip-photo-back {
     position: absolute;

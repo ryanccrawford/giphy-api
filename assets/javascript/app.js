@@ -1,5 +1,5 @@
 const PRODUCTION = false // to switch from https for production and to http for development
-
+var gifCount = 0;
 var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
     currentOffset = 0,
     currentOffsetAdder = 10,
@@ -23,13 +23,13 @@ var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
     404: 'Not Found The particular GIF you are requesting was not found.This occurs, for example, if you request a GIF by an id that does not exist.',
     429: 'Too Many Requests Your API Key is making too many requests.Read about requesting a Production Key to upgrade your API Key rate limits.'
         },
-        endPoints = function () {
+        endPoints = function () { //this object is used to create an endpoint to pass to the search function
                     return {
                     protocal: 'http://',
                     protocalSecure: 'https://',
                     host: 'api.giphy.com',
                     path: '/v1',
-                    createEndpoint: function (_endpoint = '', _protocal = '', ) {
+                    createEndpoint: function (_endpoint = '', _protocal = '', ) { // method to create endpoint based on 2 paramet
                             var p = _protocal == '' ? this.protocalSecure : _protocal,
                                 h = this.host,
                                 pt = this.path,
@@ -51,20 +51,20 @@ var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
                     }
             }
         topics = [{name:'cameras',rating:'',currentPage:0},{name:'photos',rating:'',currentPage:0},{name:'polaroid',rating:'',currentPage:0}]
-        ratings = {  'Y':'lightgreen',
+        ratings = {  'Y':'lightgreen', // this was used to give ratings a color 
                      'G': 'green',
                      'PG': 'darkgreen',
                      'PG-13':'yellow',
                      'R':'red'
                 },
-        textColors = {  'lightgreen' :'white',
+        textColors = {  'lightgreen' :'white', // this was used to convert text color to easy to read color based on background color
                 'green': 'white',
                 'darkgreen': 'white',
                 'yellow':'black',
                 'red':'white',
                 'blue':'white'
                 }
-
+// init. when the page is loaded we can then start the app
 $(document).ready(function () {
     clear()
     createTopics()
@@ -80,12 +80,18 @@ $(document).ready(function () {
         topics.push(newTopic)
         createTopics()
     })
+    $('.sharpie-back').click(function(event){
+        if($(event.target).children('a')){
+            event.preventDefault()
+        }
 
-
+    })
+   
+    
    
 
 })
-
+// creates the topic buttons that are added to the page
 function createTopics(){   
     $('#topics').empty()
     var topicsLength = topics.length
@@ -128,10 +134,13 @@ function createTopics(){
         $('#topics').append(topicButton)
     }
 }
+// Clears the screen and resets the gif counter
 function clear(){
     $('#img-cards').empty()
     $('#topics').empty()
+    gifCount = 0
  }
+ // This function creates the gif card using jquery
 function createCard(_gifObj, _title, _text, _link){
 
     var card = $('<div>'),
@@ -161,26 +170,30 @@ function createCard(_gifObj, _title, _text, _link){
     }
     return  $(card).append(cardImg).append(carBody)
 }
+// This function creates the polaroid gif using jquery
 function createPhoto(_gifObj, _title, _text, _link, _rating){
 //     <div class="flip-photo">
 
 var photoFlip = $('<div>')
-$(photoFlip).addClass('flip-photo')
+$(photoFlip).addClass('flip-photo').addClass('col-m-4').attr('id','photo_'+gifCount.toString())
     //     <div class="flip-photo-inner">
+
     var photoFrame = $('<div>')
     $(photoFrame).addClass('flip-photo-inner')
             //       <div class="flip-photo-front">
         var photoFront = $('<div>')
         $(photoFront).addClass('flip-photo-front')
             //           <img src="assets/images/picture_blank_alpha.png" alt="front"  class="photo-front">
-        var photoFrontImg = $('<img>')
-        $(photoFrontImg).addClass('photo-front')
-        $(photoFrontImg).attr('src', 'assets/images/picture_blank_alpha.gif')
-            //         <img src="https://via.placeholder.com/200" alt="photo" class="photo">
             var photoImg = $('<img>')
             $(photoImg).addClass('photo')
             $(photoImg).attr('src', _gifObj.still)
-        
+            var photoFrontImg = $('<img>')
+        $(photoFrontImg).addClass('photo-front')
+        $(photoFrontImg).attr('src', 'assets/images/picture_blank_alpha.gif')
+            //         <img src="https://via.placeholder.com/200" alt="photo" class="photo">
+      
+            
+            
     //         <div class="lable"><span class="sharpie">Title of Photo</span></div>
         var frameLable = $('<div>')
         $(frameLable).addClass('lable')
@@ -188,7 +201,7 @@ $(photoFlip).addClass('flip-photo')
             $(frameSpan).addClass('sharpie-front')
             $(frameSpan).text(_title)
         $(frameLable).append(frameSpan)
-        $(photoFront).append(photoFrontImg).append(photoImg).append(frameLable)
+        $(photoFront).append(photoImg).append(photoFrontImg).append(frameLable)
     $(photoFrame).append(photoFront)
 //       </div>
 //       <div class="flip-photo-back photo-back">
@@ -220,19 +233,36 @@ $(backDwnLink).append(dwnLink)
 $(photoBack).append(backTitle).append(backRating).append(backDwnLink)
 $(photoFrame).append(photoBack)
 $(photoFlip).append(photoFrame)
-        // $(photoImg).attr('src', _gifObj.animated)
+   //attach a click event to the phptp to flip the card over, actually toggle the flip
+        $(photoFlip).click(function(event){
+            event.preventDefault()
+            var target = event.target
+            var photo = $(target).parents('.flip-photo')
+            if(photo.length > 0){
+                $(photo[0]).toggleClass('flip')
+            }
+        })
+        
+        // incrreases the photo counter so we can id the photos 
+        gifCount++
     return  photoFlip
 }
 function search(q,rating,numToReturn) {
       limit = $('#limit').val()
         var queryObj = new qObj(q, '', rating, limit, numToReturn)
         var ep = new endPoints()
-        var url =''
+        
+        var proto='';
         if(PRODUCTION){
-             url = ep.createEndpoint('', 'https://')
+          proto = 'https://'   //url = ep.createEndpoint('', 'https://')
         }else{
-            url = ep.createEndpoint('', 'http://')
+          proto = 'http:/' // url = ep.createEndpoint('', 'http://')
         }
+        var end=''
+        if($('#trend').is(':checked')){
+            end = ep.trending
+        }
+        var url = ep.createEndpoint(end,proto)
         
        
     $.ajax({
@@ -256,7 +286,29 @@ function search(q,rating,numToReturn) {
                  var link = data[i].url
                  var title = data[i].title
                  var photo = createPhoto(gifObj, title, 'Download', link, data[i].rating)
-                              
+                              $(photo).hover(
+                                function(event){
+                                    //mouse enters starts the animation
+                                    event.preventDefault()
+                                    var image = $(event.target).find('.photo')
+                                    if(image.length > 0){
+                                        $(image[0]).attr('src', gifObj.animated)
+                                    }
+                                    
+                                },function(event){
+                                    //mouse leaves stops the animation
+                                    event.preventDefault()
+                                    var image = $(event.target).find('.photo')
+                                    if(image.length > 0 ){
+                                        $(image[0]).attr('src', gifObj.still)
+                                    }
+                        
+                        
+                                    
+                                })
+                
+                
+                
                  $('#img-cards').prepend(photo)
              }
 
