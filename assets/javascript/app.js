@@ -1,8 +1,11 @@
+const PRODUCTION = false // to switch from https for production and to http for development
+
 var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
     currentOffset = 0,
     currentOffsetAdder = 10,
     searchterm,
     crurrentPage = 0,
+    limit = 10
         qObj = function (_term, _apiKey = '', _rating = '', _limit = 0, _offset = 0) {
             
             return { 
@@ -47,7 +50,7 @@ var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
                     stickersRandom: '/stickers/random' // GET  Random Sticker Endpoint
                     }
             }
-        topics = [{name:'coding',rating:'',currentPage:0},{name:'smiles',rating:'',currentPage:0},{name:'math',rating:'',currentPage:0}]
+        topics = [{name:'cameras',rating:'',currentPage:0},{name:'photos',rating:'',currentPage:0},{name:'polaroid',rating:'',currentPage:0}]
         ratings = {  'Y':'lightgreen',
                      'G': 'green',
                      'PG': 'darkgreen',
@@ -82,24 +85,17 @@ $(document).ready(function () {
    
 
 })
-function increasePage(name){
-    
-}
+
 function createTopics(){   
     $('#topics').empty()
     var topicsLength = topics.length
     for(let i=0; i < topicsLength; i++){
-        var topicButton = $('<button>')
-        var rating = topics[i].rating
-        color = 'blue'
-        if(rating){
-           color = ratings[rating];
-        }
+        var topicButton = $('<button>')   
         $(topicButton).addClass('topicButton')
         $(topicButton).addClass('btn')
         $(topicButton).data({'currentPage':0})
         $(topicButton).data({'rating': topics[i].rating })
-        $(topicButton).css({'background-color':color, color: 'white'})
+        $(topicButton).css({'background-color':'white', color: 'black'})
         $(topicButton).data({'name':topics[i].name})
         $(topicButton).addClass('ml-1')
         $(topicButton).text(topics[i].name.toUpperCase())
@@ -165,25 +161,92 @@ function createCard(_gifObj, _title, _text, _link){
     }
     return  $(card).append(cardImg).append(carBody)
 }
+function createPhoto(_gifObj, _title, _text, _link, _rating){
+//     <div class="flip-photo">
+
+var photoFlip = $('<div>')
+$(photoFlip).addClass('flip-photo')
+    //     <div class="flip-photo-inner">
+    var photoFrame = $('<div>')
+    $(photoFrame).addClass('flip-photo-inner')
+            //       <div class="flip-photo-front">
+        var photoFront = $('<div>')
+        $(photoFront).addClass('flip-photo-front')
+            //           <img src="assets/images/picture_blank_alpha.png" alt="front"  class="photo-front">
+        var photoFrontImg = $('<img>')
+        $(photoFrontImg).addClass('photo-front')
+        $(photoFrontImg).attr('src', 'assets/images/picture_blank_alpha.gif')
+            //         <img src="https://via.placeholder.com/200" alt="photo" class="photo">
+            var photoImg = $('<img>')
+            $(photoImg).addClass('photo')
+            $(photoImg).attr('src', _gifObj.still)
+        
+    //         <div class="lable"><span class="sharpie">Title of Photo</span></div>
+        var frameLable = $('<div>')
+        $(frameLable).addClass('lable')
+            var frameSpan = $('<span>')
+            $(frameSpan).addClass('sharpie-front')
+            $(frameSpan).text(_title)
+        $(frameLable).append(frameSpan)
+        $(photoFront).append(photoFrontImg).append(photoImg).append(frameLable)
+    $(photoFrame).append(photoFront)
+//       </div>
+//       <div class="flip-photo-back photo-back">
+var photoBack = $('<div>')
+$(photoBack).addClass('flip-photo-back').addClass('photo-back')
+//           <img src="assets/images/picture_blank_back.png" alt="back"  class="photo-back">
+
+var photoBackImg = $('<img>')
+$(photoBackImg).attr('src', 'assets/images/picture_blank_back.gif')
+$(photoBackImg).addClass('photo-back')
+$(photoBack).append(photoBackImg)
+//         <h1 class="sharpie">Title</h1>
+var backTitle = $('<h1>')
+ $(backTitle).text(_title)
+ $(backTitle).addClass('sharpie-back')
+//         <p class="sharpie">Rating: G</p> 
+var backRating = $('<p>')
+$(backRating).text('Rating: '+_rating)
+$(backRating).addClass('sharpie-back')
+
+//<p class="sharpie">Download Now</p>
+var backDwnLink = $('<p>')
+$(backDwnLink).addClass('sharpie-back')
+var dwnLink = $('<a>')
+$(dwnLink).attr('href',_link)
+$(dwnLink).text('Download Now')
+$(backDwnLink).append(dwnLink)
+//         
+$(photoBack).append(backTitle).append(backRating).append(backDwnLink)
+$(photoFrame).append(photoBack)
+$(photoFlip).append(photoFrame)
+        // $(photoImg).attr('src', _gifObj.animated)
+    return  photoFlip
+}
 function search(q,rating,numToReturn) {
-      
-        var queryObj = new qObj(q, '', rating, 10, numToReturn)
-        var ep = new endPoints();
-        var url = ep.createEndpoint('', 'http://')
+      limit = $('#limit').val()
+        var queryObj = new qObj(q, '', rating, limit, numToReturn)
+        var ep = new endPoints()
+        var url =''
+        if(PRODUCTION){
+             url = ep.createEndpoint('', 'https://')
+        }else{
+            url = ep.createEndpoint('', 'http://')
+        }
+        
        
     $.ajax({
         type: "GET",
         url: url,
         data: queryObj,
     }).then(function (response) {
-        console.log(response)
-        var data = response.data,
-            pagination = response.pagination,
-            meta = response.meta
+        var data = response.data
+        console.log(data)
+        var meta = response.meta
         if (meta.msg == 'OK') {
                        
              var dataLength = data.length
-             for (let i = 0; i < dataLength; i++) {
+        for (let i = 0; i < dataLength; i++) {
                  var stillImage = data[i].images.fixed_width_still.url
                  var animatedImage = data[i].images.fixed_width.url
                  var gifObj = {
@@ -192,9 +255,9 @@ function search(q,rating,numToReturn) {
                  }
                  var link = data[i].url
                  var title = data[i].title
-                 var card = createCard(gifObj, title, 'Download', link)
+                 var photo = createPhoto(gifObj, title, 'Download', link, data[i].rating)
                               
-                 $('#img-cards').prepend(card)
+                 $('#img-cards').prepend(photo)
              }
 
         }else{
