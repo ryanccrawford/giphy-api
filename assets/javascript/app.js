@@ -151,11 +151,7 @@ function createCard(_gifObj, _title, _text, _link){
         imageLink = $('<a>')
     $(imageLink).attr('href', _link)
     $(card).addClass('card')
-    $(cardImg).attr('src', _gifObj.still).addClass('card-img-top').hover(function () {
-        $(cardImg).attr('src', _gifObj.animated)
-    }, function () {
-        $(cardImg).attr('src', _gifObj.still)
-    })
+    $(cardImg).attr('src', _gifObj.still).addClass('card-img-top')
     var color = ratings[_gifObj.rating] 
  
     var textColor = textColors[color]
@@ -186,7 +182,10 @@ $(photoFlip).addClass('flip-photo').addClass('col-m-4').attr('id','photo_'+gifCo
             //           <img src="assets/images/picture_blank_alpha.png" alt="front"  class="photo-front">
             var photoImg = $('<img>')
             $(photoImg).addClass('photo')
-            $(photoImg).attr('src', _gifObj.still)
+    $(photoImg).attr('src', _gifObj.still)
+    $(photoImg).attr('data-still', _gifObj.still)
+    $(photoImg).attr('data-animate', _gifObj.animated)
+    photoImg.isAntimating = false
             var photoFrontImg = $('<img>')
         $(photoFrontImg).addClass('photo-front')
         $(photoFrontImg).attr('src', 'assets/images/picture_blank_alpha.gif')
@@ -242,7 +241,7 @@ $(photoFlip).append(photoFrame)
                 $(photo[0]).toggleClass('flip')
             }
         })
-        
+      
         // incrreases the photo counter so we can id the photos 
         gifCount++
     return  photoFlip
@@ -287,22 +286,30 @@ function search(q,rating,numToReturn) {
                  var title = data[i].title
                  var photo = createPhoto(gifObj, title, 'Download', link, data[i].rating)
                               $(photo).hover(
-                                function(event){
-                                    //mouse enters starts the animation
-                                    event.preventDefault()
-                                    var image = $(event.target).find('.photo')
-                                    if(image.length > 0){
-                                        $(image[0]).attr('src', gifObj.animated)
-                                    }
+                                  function (event) {
                                     
-                                },function(event){
+                                    //mouse enters starts the animation
+                                      if (!this.isAnimating) {
+                                          this.isAnimating = true
+                                          event.preventDefault()
+                                          var image = $(this)
+                                          if (image.length > 0) {
+                                              var animated = $(image).attr('data-animate')
+                                              $(image).attr('src', animated)
+                                          }
+                                      }
+                                  }, function (event) {
+                                     
                                     //mouse leaves stops the animation
-                                    event.preventDefault()
-                                    var image = $(event.target).find('.photo')
-                                    if(image.length > 0 ){
-                                        $(image[0]).attr('src', gifObj.still)
-                                    }
-                        
+                                      event.preventDefault()
+                                      if (this.isAntimating) {
+                                          var image = $(this)
+                                          if (image.length > 0) {
+                                              var still = $(image).attr('data-still')
+                                              $(image).attr('src', still)
+                                          }
+                                          this.isAnimating = false
+                                      }
                         
                                     
                                 })
