@@ -1,4 +1,4 @@
-const PRODUCTION = false // to switch from https for production and to http for development
+const PRODUCTION = true // to switch from https for production and to http for development
 var gifCount = 0,
     apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
     currentOffset = 0,
