@@ -167,9 +167,13 @@ function createCard(_gifObj, _title, _text, _link){
     return  $(card).append(cardImg).append(carBody)
 }
 // This function creates the polaroid gif using jquery
-function createPhoto(_gifObj, _title, _text, _link, _rating){
+function createPhoto(_giphyObj){
 //     <div class="flip-photo">
-
+var stillImage = _giphyObj.images.fixed_width_still.url,
+    animatedImage = _giphyObj.images.fixed_width.url,
+    link = _giphyObj.animatedImage,
+    title = _giphyObj.title
+    rating = _giphyObj.rating
 var photoFlip = $('<div>')
 $(photoFlip).addClass('flip-photo').addClass('col-m-4').attr('id','photo_'+gifCount.toString())
     //     <div class="flip-photo-inner">
@@ -182,9 +186,11 @@ $(photoFlip).addClass('flip-photo').addClass('col-m-4').attr('id','photo_'+gifCo
             //           <img src="assets/images/picture_blank_alpha.png" alt="front"  class="photo-front">
             var photoImg = $('<img>')
             $(photoImg).addClass('photo')
-    $(photoImg).attr('src', _gifObj.still)
-    $(photoImg).attr('data-still', _gifObj.still)
-    $(photoImg).attr('data-animate', _gifObj.animated)
+            var imageId = 'img_'+gifCount.toString()
+    $(photoImg).attr('src', stillImage).attr('id',imageId)
+    $(photoImg).attr('data-still', stillImage)
+    $(photoImg).attr('data-animate', animatedImage)
+    $(photoImg).attr('data-state', 'still')
     photoImg.isAntimating = false
             var photoFrontImg = $('<img>')
         $(photoFrontImg).addClass('photo-front')
@@ -198,7 +204,7 @@ $(photoFlip).addClass('flip-photo').addClass('col-m-4').attr('id','photo_'+gifCo
         $(frameLable).addClass('lable')
             var frameSpan = $('<span>')
             $(frameSpan).addClass('sharpie-front')
-            $(frameSpan).text(_title)
+            $(frameSpan).text(title)
         $(frameLable).append(frameSpan)
         $(photoFront).append(photoImg).append(photoFrontImg).append(frameLable)
     $(photoFrame).append(photoFront)
@@ -214,18 +220,18 @@ $(photoBackImg).addClass('photo-back')
 $(photoBack).append(photoBackImg)
 //         <h1 class="sharpie">Title</h1>
 var backTitle = $('<h1>')
- $(backTitle).text(_title)
+ $(backTitle).text(title)
  $(backTitle).addClass('sharpie-back')
 //         <p class="sharpie">Rating: G</p> 
 var backRating = $('<p>')
-$(backRating).text('Rating: '+_rating)
+$(backRating).text('Rating: '+rating)
 $(backRating).addClass('sharpie-back')
 
 //<p class="sharpie">Download Now</p>
 var backDwnLink = $('<p>')
 $(backDwnLink).addClass('sharpie-back')
 var dwnLink = $('<a>')
-$(dwnLink).attr('href',_link)
+$(dwnLink).attr('href',link)
 $(dwnLink).text('Download Now')
 $(backDwnLink).append(dwnLink)
 //         
@@ -243,7 +249,7 @@ $(photoFlip).append(photoFrame)
         })
       
         // incrreases the photo counter so we can id the photos 
-        gifCount++
+       
     return  photoFlip
 }
 function search(q,rating,numToReturn) {
@@ -276,47 +282,45 @@ function search(q,rating,numToReturn) {
                        
              var dataLength = data.length
         for (let i = 0; i < dataLength; i++) {
-                 var stillImage = data[i].images.fixed_width_still.url
-                 var animatedImage = data[i].images.fixed_width.url
-                 var gifObj = {
-                     still: stillImage,
-                     animated: animatedImage
-                 }
-                 var link = data[i].url
-                 var title = data[i].title
-                 var photo = createPhoto(gifObj, title, 'Download', link, data[i].rating)
-                              $(photo).hover(
-                                  function (event) {
-                                    
-                                    //mouse enters starts the animation
-                                      if (!this.isAnimating) {
-                                          this.isAnimating = true
-                                          event.preventDefault()
-                                          var image = $(this)
-                                          if (image.length > 0) {
-                                              var animated = $(image).attr('data-animate')
-                                              $(image).attr('src', animated)
-                                          }
-                                      }
-                                  }, function (event) {
-                                     
-                                    //mouse leaves stops the animation
-                                      event.preventDefault()
-                                      if (this.isAntimating) {
-                                          var image = $(this)
-                                          if (image.length > 0) {
-                                              var still = $(image).attr('data-still')
-                                              $(image).attr('src', still)
-                                          }
-                                          this.isAnimating = false
-                                      }
-                        
-                                    
-                                })
-                
-                
-                
-                 $('#img-cards').prepend(photo)
+                                  
+                 var photo = createPhoto(data[i])
+                 var photoId = photo[0].id
+                 gifCount++
+                 $('#img-cards').prepend(photo[0])
+                 $("#"+photoId).hover(
+                    function (event) {
+                      event.preventDefault()
+                      //mouse enters starts the animation
+                        var id =this.id.split("_")[1]
+                          var gif = $("#img_"+id+".photo")[0]
+                          var state = $(gif).attr('data-state')
+                        if (state == 'still') {
+                            $(gif).attr('data-state','animated')
+                            
+                            var image = gif.id
+                            if (image) {
+                                var animated = $(gif).attr('data-animate')
+                                $(gif).attr('src', animated)
+                            }
+                        }
+                    }, function (event) {
+                       
+                      //mouse leaves stops the animation
+                        event.preventDefault()
+                        var id =this.id.split("_")[1]
+                        var gif = $("#img_"+id+".photo")[0]
+                        var state = $(gif).attr('data-state')
+                        if (state == 'animated') {
+                            var image = gif.id
+                            if (image) {
+                                var still = $(gif).attr('data-still')
+                                $(gif).attr('src', still)
+                            }
+                            $(gif).attr('data-state','still')
+                        }
+          
+                      
+                  })
              }
 
         }else{
