@@ -227,25 +227,31 @@ $(dwnLink).text('Download Now')
 $(dwnLink).click(function(event){
    event.preventDefault();
     var gifurl = $(event.target).data('url')
-    var url = gifurl + "?api_key=" + apiKey
-        $.ajax({
-                headers: {          
-                    Accept: "image/*"       
-                } ,
-                xhrFields: {
-                    responseType: 'blob'
-                },
-                type: "GET",
-                url: url,
-                success: function (response) {
-                    var a = $('<a>');
-                    var uri = window.URL.createObjectURL(response);
-                    $(a).attr('href', uri);
-                    a.download = 'downloaded.gif';
-                    a.click();
-                    window.URL.revokeObjectURL(uri);
-                }
-        });
+    // gifurl// + "?api_key=" + apiKey
+    var a = $('<a>');
+    var uri = window.URL.createObjectURL(gifurl);
+    $(a).attr('href', uri);
+    a.download = 'downloaded.gif';
+    a.click();
+    window.URL.revokeObjectURL(uri);
+        // $.ajax({
+        //         headers: {          
+        //             Accept: "image/*"       
+        //         } ,
+        //         xhrFields: {
+        //             responseType: 'blob'
+        //         },
+        //         type: "GET",
+        //         url: url,
+        //         success: function (response) {
+        //             var a = $('<button>');
+        //             var uri = window.URL.createObjectURL(response);
+        //             $(a).attr('href', uri);
+        //             a.download = 'downloaded.gif';
+        //             a.click();
+        //             window.URL.revokeObjectURL(uri);
+        //         }
+        // });
        
    
 })
