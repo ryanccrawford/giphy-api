@@ -70,7 +70,7 @@ var gifCount = 0,
 $(document).ready(function () {
     clear()
     createTopics()
-    
+    $('.alert').alert()
     $('#add').click(function (event) {
         event.preventDefault()
        var _name = $('#q').val()
@@ -106,6 +106,7 @@ function createTopics(){
         $(topicButton).data({'rating': topics[i].rating })
         $(topicButton).css({'background-color':'white', color: 'black'})
         $(topicButton).data({'name':topics[i].name})
+        $(topicButton).data({'offset':0})
         $(topicButton).addClass('ml-1')
         $(topicButton).text(topics[i].name.toUpperCase())
         var span = $('<span>')
@@ -126,13 +127,19 @@ function createTopics(){
             rating = $(event.target).data('rating')
             
             q = $(event.target).data('name')
-            currentPage = $(event.target).data('currentPage')
+            
             if(rating == 'all'){
                 rating = ''
             }
-        
-            search(q,rating,currentPage)
-        
+            var offset = $(event.target).data('offset')
+            var l = $('#limit').val()
+            if (l > 25 || l < 1) {
+                l = 10
+                $('#limit').val(10)
+            }
+            search(q,rating,l,offset)
+            offset = offset + parseInt(l)
+            $(event.target).data('offset' , offset)
         })
         $('#topics').append(topicButton)
     }
@@ -150,13 +157,16 @@ function createPhoto(_giphyObj){
 //     <div class="flip-photo">
 var stillImage = _giphyObj.images.fixed_width_still.url,
     animatedImage = _giphyObj.images.fixed_width.url,
-    link = _giphyObj.animatedImage,
-    title = _giphyObj.title
-    rating = _giphyObj.rating
+    link = _giphyObj.images.original.url,
+    title = _giphyObj.title,
+    rating = _giphyObj.rating,
+    id = _giphyObj.id,
+    downloadurl = _giphyObj.url
 var photoFlip = $('<div>')
 $(photoFlip).addClass('flip-photo').addClass('col-m-4').attr('id','photo_'+gifCount.toString())
     //     <div class="flip-photo-inner">
-
+   
+        
     var photoFrame = $('<div>')
     $(photoFrame).addClass('flip-photo-inner')
             //       <div class="flip-photo-front">
@@ -210,8 +220,35 @@ $(backRating).addClass('sharpie-back')
 var backDwnLink = $('<p>')
 $(backDwnLink).addClass('sharpie-back')
 var dwnLink = $('<a>')
-$(dwnLink).attr('href',link)
+$(dwnLink).addClass('download')
+$(dwnLink).attr('data-url',downloadurl)
 $(dwnLink).text('Download Now')
+
+$(dwnLink).click(function(event){
+   event.preventDefault();
+    var gifurl = $(event.target).data('url')
+    var url = gifurl + "?api_key=" + apiKey
+        $.ajax({
+                headers: {          
+                    Accept: "image/*"       
+                } ,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                type: "GET",
+                url: url,
+                success: function (response) {
+                    var a = $('<a>');
+                    var uri = window.URL.createObjectURL(response);
+                    $(a).attr('href', uri);
+                    a.download = 'downloaded.gif';
+                    a.click();
+                    window.URL.revokeObjectURL(uri);
+                }
+        });
+       
+   
+})
 $(backDwnLink).append(dwnLink)
 //         
 $(photoBack).append(backTitle).append(backRating).append(backDwnLink)
@@ -233,18 +270,13 @@ $(photoFlip).append(photoFrame)
 }
 
 //Function to search the giphy API
-function search(q,rating,numToReturn) {
+function search(_q,_rating,_limit,_offset) {
         //Get the limit from the limit box
-    limit = $('#limit').val()
+   
 
-    //do not allow the limit to go more than 25 so if they forced the limit change it back to 10
-    if (limit > 25 || limit < 1) {
-        limit = 10
-        $('#limit').val(10)
-    }
 
     //create a new query object 
-    var queryObj = new qObj(q, '', rating, limit, numToReturn)
+    var queryObj = new qObj(_q, '', _rating, _limit, _offset)
     //create a new endpoint object
     var ep = new endPoints()
     //This checks the PRODUCTION const to see if we are testing or not to determine weather or not to use HTTP or HTTPS

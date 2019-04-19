@@ -29,29 +29,37 @@
            <form id="searchForm">
             <div class="form-group text-white heading">
                   <label for="q">Topic, subject or phrase</label>
-                  <input type="text" class="form-control" name="q" id="q">
+                  <input type="text" class="form-control" name="q" id="q" data-toggle="tooltip" data-placement="top" title="Enter a term or subject">
             </div>
             <div class="form-group text-white heading">
                <label for="Limit">Limit</label>
-              <input type="number" class="form-control" name="limit" id="limit" value=10 max="25" min="1">
+              <input type="number" class="form-control" name="limit" id="limit" value=10 max="25" min="1" data-toggle="tooltip" data-placement="top" title="Enter the max number of returned gifs. Max is 25"> 
          
             </div>  
             <div class="form-check text-white heading">
               <label class="form-check-label">
-                <input type="checkbox" class="form-check-input" name="trend" id="trend" value="trend" >
+                <input type="checkbox" class="form-check-input" name="trend" id="trend" value="trend" data-toggle="tooltip" data-placement="top" title="If checked, the search will be preformed on only the top trending images">
                 Show trending polaroids only.
               </label>
             </div>         
             <div class="form-group text-right text-white heading">
-            <button type="submit" id="add" data-name="add" class="btn circle btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
+            <button type="submit" id="add" data-name="add" class="btn circle btn-primary" data-toggle="tooltip" data-placement="top" title="Click to add topic."><i class="fa fa-plus" aria-hidden="true"></i></button>
          </div>
          </form>
          </div>
       </div>
       <div class="row mt-2">
-            <div class="col-xl-12">
+            <div class="col-xl-12 mb-2">
                   <div class="text-white center-sub">Click on a topic, below or add more topics, above.</div>
-            </div>
+                  <div class="alert alert-success alert-dismissible fade show shadow" role="alert">
+                     <strong>HINT:</strong> To see the animation hold your mouse over the picture.<br>
+                                          To stop move your mouse away.<br>
+                                          To download a gif, click on a Polaroid to flip it over, on the back you'll find a link to download the image.
+                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                     </button>
+                   </div>
+               </div>
             <div id="topics" class="col-xl-12">
                
             </div>

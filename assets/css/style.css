@@ -9,7 +9,9 @@
 .topicButton{
     border: 1px solid black;
 }
-
+div#topics {
+    text-align: center;
+}
 body{
     background-color: black;
     background-image: url(../../assets/images/background.jpg);
@@ -111,4 +113,11 @@ body{
     color: black;
     font-size: 20px;
     width: 80%;
+}
+.download{
+
+    color:blue !important;
+    cursor: pointer;
+    text-decoration: underline;
+
 }

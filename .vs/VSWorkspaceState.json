@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\assets",
+    "\\assets\\javascript"
   ],
-  "SelectedNode": "\\index.html",
+  "SelectedNode": "\\assets\\javascript\\app.js",
   "PreviewInSolutionExplorer": false
 }
