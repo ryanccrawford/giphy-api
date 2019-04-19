@@ -229,7 +229,7 @@ $(dwnLink).click(function(event){
     var gifurl = $(event.target).data('url')
     // gifurl// + "?api_key=" + apiKey
     var a = $('<a>');
-    var uri = window.URL.createObjectURL(gifurl);
+    var uri = gifurl;
     $(a).attr('href', uri);
     a.download = 'downloaded.gif';
     a.click();
