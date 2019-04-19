@@ -1,12 +1,12 @@
 const PRODUCTION = false // to switch from https for production and to http for development
-var gifCount = 0;
-var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
+var gifCount = 0,
+    apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
     currentOffset = 0,
     currentOffsetAdder = 10,
     searchterm,
     crurrentPage = 0,
-    limit = 10
-        qObj = function (_term, _apiKey = '', _rating = '', _limit = 0, _offset = 0) {
+    limit = 10,
+    qObj = function (_term, _apiKey = '', _rating = '', _limit = 0, _offset = 0) {
             
             return { 
                     api_key: _apiKey == '' ? apiKey : _apiKey,
@@ -15,15 +15,15 @@ var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
                     offset: _offset,
                     rating: _rating 
                     }
-        },
-        metaResponseMsg = {
-    200: 'OK Your request was successful.',
-    400: 'Bad Request Your request was formatted incorrectly or missing required parameters.',
-    403: 'Forbidden You weren \'t authorized to make your request; most likely this indicates an issue with your API Key.',
-    404: 'Not Found The particular GIF you are requesting was not found.This occurs, for example, if you request a GIF by an id that does not exist.',
-    429: 'Too Many Requests Your API Key is making too many requests.Read about requesting a Production Key to upgrade your API Key rate limits.'
-        },
-        endPoints = function () { //this object is used to create an endpoint to pass to the search function
+     },
+    metaResponseMsg = {
+                            200: 'OK Your request was successful.',
+                            400: 'Bad Request Your request was formatted incorrectly or missing required parameters.',
+                            403: 'Forbidden You weren \'t authorized to make your request; most likely this indicates an issue with your API Key.',
+                            404: 'Not Found The particular GIF you are requesting was not found.This occurs, for example, if you request a GIF by an id that does not exist.',
+                            429: 'Too Many Requests Your API Key is making too many requests.Read about requesting a Production Key to upgrade your API Key rate limits.'
+     },
+    endPoints = function () { //this object is used to create an endpoint to pass to the search function
                     return {
                     protocal: 'http://',
                     protocalSecure: 'https://',
@@ -49,21 +49,23 @@ var apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
                     stickersTranslate: '/stickers/translate', // GET Sticker Translate Endpoint
                     stickersRandom: '/stickers/random' // GET  Random Sticker Endpoint
                     }
+     },
+    topics = [{name:'cameras',rating:'',currentPage:0},{name:'photos',rating:'',currentPage:0},{name:'polaroid',rating:'',currentPage:0}],
+    ratings = {
+        'Y': 'lightgreen', // this was used to give ratings a color 
+                    'G': 'green',
+                    'PG': 'darkgreen',
+                    'PG-13':'yellow',
+                    'R':'red'
+            },
+    textColors = {  'lightgreen' :'white', // this was used to convert text color to easy to read color based on background color
+            'green': 'white',
+            'darkgreen': 'white',
+            'yellow':'black',
+            'red':'white',
+            'blue':'white'
             }
-        topics = [{name:'cameras',rating:'',currentPage:0},{name:'photos',rating:'',currentPage:0},{name:'polaroid',rating:'',currentPage:0}]
-        ratings = {  'Y':'lightgreen', // this was used to give ratings a color 
-                     'G': 'green',
-                     'PG': 'darkgreen',
-                     'PG-13':'yellow',
-                     'R':'red'
-                },
-        textColors = {  'lightgreen' :'white', // this was used to convert text color to easy to read color based on background color
-                'green': 'white',
-                'darkgreen': 'white',
-                'yellow':'black',
-                'red':'white',
-                'blue':'white'
-                }
+
 // init. when the page is loaded we can then start the app
 $(document).ready(function () {
     clear()
@@ -91,6 +93,7 @@ $(document).ready(function () {
    
 
 })
+
 // creates the topic buttons that are added to the page
 function createTopics(){   
     $('#topics').empty()
@@ -134,39 +137,15 @@ function createTopics(){
         $('#topics').append(topicButton)
     }
 }
+
 // Clears the screen and resets the gif counter
 function clear(){
     $('#img-cards').empty()
     $('#topics').empty()
     gifCount = 0
  }
- // This function creates the gif card using jquery
-function createCard(_gifObj, _title, _text, _link){
 
-    var card = $('<div>'),
-        cardImg = $('<img>'),
-        carBody = $('<div>'),
-        cardTitle = $('<h4>'),
-        cardText = $('<p>'),
-        imageLink = $('<a>')
-    $(imageLink).attr('href', _link)
-    $(card).addClass('card')
-    $(cardImg).attr('src', _gifObj.still).addClass('card-img-top')
-    var color = ratings[_gifObj.rating] 
- 
-    var textColor = textColors[color]
-    $(carBody).addClass('card-body')
-    $(carBody).css({'background-color':color})
-    $(carBody).css({'color':textColor})
-    $(cardTitle).addClass('card-title').text(_title)
-    $(imageLink).append(cardTitle)
-    if (_text != '') {
-        $(cardText).addClass('card-text').text(_text)
-        $(carBody).append(cardTitle).append(cardText)
-    }
-    return  $(card).append(cardImg).append(carBody)
-}
-// This function creates the polaroid gif using jquery
+// This function creates the polaroid gif using jquery. The Parameter is one giphy API object from the returned response of search
 function createPhoto(_giphyObj){
 //     <div class="flip-photo">
 var stillImage = _giphyObj.images.fixed_width_still.url,
@@ -252,16 +231,28 @@ $(photoFlip).append(photoFrame)
        
     return  photoFlip
 }
+
+//Function to search the giphy API
 function search(q,rating,numToReturn) {
-      limit = $('#limit').val()
-        var queryObj = new qObj(q, '', rating, limit, numToReturn)
-        var ep = new endPoints()
-        
-        var proto='';
+        //Get the limit from the limit box
+    limit = $('#limit').val()
+
+    //do not allow the limit to go more than 25 so if they forced the limit change it back to 10
+    if (limit > 25 || limit < 1) {
+        limit = 10
+        $('#limit').val(10)
+    }
+
+    //create a new query object 
+    var queryObj = new qObj(q, '', rating, limit, numToReturn)
+    //create a new endpoint object
+    var ep = new endPoints()
+    //This checks the PRODUCTION const to see if we are testing or not to determine weather or not to use HTTP or HTTPS
+    var proto = '';
         if(PRODUCTION){
-          proto = 'https://'   //url = ep.createEndpoint('', 'https://')
+          proto = 'https://'  
         }else{
-          proto = 'http:/' // url = ep.createEndpoint('', 'http://')
+          proto = 'http:/'
         }
         var end=''
         if($('#trend').is(':checked')){
@@ -269,7 +260,7 @@ function search(q,rating,numToReturn) {
         }
         var url = ep.createEndpoint(end,proto)
         
-       
+    //This is where we call the API using the above created objects 
     $.ajax({
         type: "GET",
         url: url,
@@ -287,7 +278,8 @@ function search(q,rating,numToReturn) {
                  var photoId = photo[0].id
                  gifCount++
                  $('#img-cards').prepend(photo[0])
-                 $("#"+photoId).hover(
+            //Hover function used to play gif animations on mouse over and to stop on mouse out
+            $("#" + photoId).hover(
                     function (event) {
                       event.preventDefault()
                       //mouse enters starts the animation
@@ -323,7 +315,8 @@ function search(q,rating,numToReturn) {
                   })
              }
 
-        }else{
+        } else {
+            //This is for any errors that my happen. It will display a message with the english version of the message 
             $('#errors').empty()
             var message = metaResponseMsg[meta.status]
             var error = $('<div>')
