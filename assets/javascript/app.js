@@ -117,7 +117,7 @@ $(document).ready(function () {
 
 // creates the topic buttons that are added to the page
 function createTopics() {
-    $('#topics').empty()
+    $('#topicsBox').empty()
     var topicsLength = topics.length
     for (let i = 0; i < topicsLength; i++) {
         var topicButton = $('<button>')
@@ -173,7 +173,7 @@ function createTopics() {
             offset = offset + parseInt(l)
             $(event.target).data('offset', offset)
         })
-        $('#topics').append(topicButton)
+        $('#topicsBox').append(topicButton)
     }
 }
 

@@ -11,6 +11,14 @@
     border: 1px solid black;
 }
 
+#topicsBox {
+    background-color: #ffffff52;
+    border: 1px solid black;
+    height: 100%;
+    margin-top: 10px;
+
+
+}
 div#topics {
     text-align: center;
 }
