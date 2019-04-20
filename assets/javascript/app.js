@@ -1,4 +1,4 @@
-const PRODUCTION = true // to switch from https for production and to http for development
+//GLOBALS
 var gifCount = 0,
     apiKey = 'D3VKLzuXAaCof4EJI2yPxFYLWggvmHlG',
     currentOffset = 0,
@@ -69,7 +69,7 @@ var gifCount = 0,
 // init. when the page is loaded we can then start the app
 $(document).ready(function () {
     clear()
-    createTopics()
+    
     $('.alert').alert()
     $('#add').click(function (event) {
         event.preventDefault()
@@ -88,7 +88,9 @@ $(document).ready(function () {
         }
 
     })
-   
+    $('#clear').click(function () {
+       clear()
+   })
     
    
 
@@ -150,6 +152,7 @@ function clear(){
     $('#img-cards').empty()
     $('#topics').empty()
     gifCount = 0
+    createTopics()
  }
 
 // This function creates the polaroid gif using jquery. The Parameter is one giphy API object from the returned response of search
@@ -157,11 +160,11 @@ function createPhoto(_giphyObj){
 //     <div class="flip-photo">
 var stillImage = _giphyObj.images.fixed_width_still.url,
     animatedImage = _giphyObj.images.fixed_width.url,
-    link = _giphyObj.images.original.url,
+    link = animatedImage,
     title = _giphyObj.title,
     rating = _giphyObj.rating,
-    id = _giphyObj.id,
-    downloadurl = _giphyObj.url
+    id = _giphyObj.id
+    //downloadurl = _giphyObj.url
 var photoFlip = $('<div>')
 $(photoFlip).addClass('flip-photo').addClass('col-m-4').attr('id','photo_'+gifCount.toString())
     //     <div class="flip-photo-inner">
@@ -220,57 +223,28 @@ $(backRating).addClass('sharpie-back')
 var backDwnLink = $('<p>')
 $(backDwnLink).addClass('sharpie-back')
 var dwnLink = $('<a>')
-$(dwnLink).addClass('download')
-$(dwnLink).attr('data-url',downloadurl)
+    $(dwnLink).addClass('download')
+    $(dwnLink).attr('download', id+'.gif')
+$(dwnLink).attr('href',link)
 $(dwnLink).text('Download Now')
-
-$(dwnLink).click(function(event){
-   event.preventDefault();
-    var gifurl = $(event.target).data('url')
-    // gifurl// + "?api_key=" + apiKey
-    var a = $('<a>');
-    var uri = gifurl;
-    $(a).attr('href', uri);
-    a.download = 'downloaded.gif';
-    a.click();
-    window.URL.revokeObjectURL(uri);
-        // $.ajax({
-        //         headers: {          
-        //             Accept: "image/*"       
-        //         } ,
-        //         xhrFields: {
-        //             responseType: 'blob'
-        //         },
-        //         type: "GET",
-        //         url: url,
-        //         success: function (response) {
-        //             var a = $('<button>');
-        //             var uri = window.URL.createObjectURL(response);
-        //             $(a).attr('href', uri);
-        //             a.download = 'downloaded.gif';
-        //             a.click();
-        //             window.URL.revokeObjectURL(uri);
-        //         }
-        // });
-       
-   
-})
-$(backDwnLink).append(dwnLink)
-//         
+$(backDwnLink).append(dwnLink)       
 $(photoBack).append(backTitle).append(backRating).append(backDwnLink)
 $(photoFrame).append(photoBack)
 $(photoFlip).append(photoFrame)
    //attach a click event to the phptp to flip the card over, actually toggle the flip
         $(photoFlip).click(function(event){
-            event.preventDefault()
+            
             var target = event.target
+            if ($(target).is('a')) {
+                return true
+            }
             var photo = $(target).parents('.flip-photo')
             if(photo.length > 0){
                 $(photo[0]).toggleClass('flip')
             }
+            event.preventDefault()
         })
-      
-        // incrreases the photo counter so we can id the photos 
+       
        
     return  photoFlip
 }
@@ -286,12 +260,11 @@ function search(_q,_rating,_limit,_offset) {
     //create a new endpoint object
     var ep = new endPoints()
     //This checks the PRODUCTION const to see if we are testing or not to determine weather or not to use HTTP or HTTPS
-    var proto = '';
-        if(PRODUCTION){
-          proto = 'https://'  
-        }else{
-          proto = 'http:/'
-        }
+    var proto = location.protocol
+    if (proto != 'https:' || proto != 'http:') {
+        proto = 'http:'
+    }
+    proto += '//'
         var end=''
         if($('#trend').is(':checked')){
             end = ep.trending
