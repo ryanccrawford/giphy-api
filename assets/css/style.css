@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'sharpie';
-    src: url('../fonts/sharpie.ttf') format('truetype');
+    src: url('../../assets/fonts/sharpie.ttf') format('truetype');
 }
 
 .search {
@@ -134,9 +134,10 @@ body {
 
     color: blue !important;
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: none !important;
     background-color: white;
     border: 1px solid black;
     padding: 5px;
+    border-radius: 5px;
 
 }
