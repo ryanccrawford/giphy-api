@@ -7,7 +7,7 @@
     border-radius: 100% !important;
 }
 .topicButton{
-    border: 1px solid black;
+  
 }
 div#topics {
     text-align: center;
@@ -105,6 +105,7 @@ body{
 .heading{
     font-size: 20px;
     font-weight: bolder;
+        white-space: nowrap;
 }
 .circle {
     border-radius: 100%;
@@ -124,4 +125,26 @@ body{
     border: 1px solid black;
     padding: 5px;
     
+}
+.topicButton:hover{
+    stroke-dasharray: 1103px;
+    stroke-width: 5px;
+    fill: transparent;
+    stroke: #19f6e8;
+    animation: fling 1000ms 1 forwards;
+}
+@keyframes fling{
+    0%{
+        stroke-dashoffset: 1103px;
+    }
+    100%{
+        stroke-dashoffset:    0px;
+    }
+}
+#toTOP{
+
+    color:white;
+    float: right;
+    background-color: red;
+
 }

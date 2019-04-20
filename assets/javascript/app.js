@@ -29,7 +29,7 @@ var gifCount = 0,
                     protocalSecure: 'https://',
                     host: 'api.giphy.com',
                     path: '/v1',
-                    createEndpoint: function (_endpoint = '', _protocal = '', ) { // method to create endpoint based on 2 paramet
+                    createEndpoint: function (_endpoint, _protocal) { // method to create endpoint based on 2 paramet
                             var p = _protocal == '' ? this.protocalSecure : _protocal,
                                 h = this.host,
                                 pt = this.path,
@@ -69,7 +69,7 @@ var gifCount = 0,
 // init. when the page is loaded we can then start the app
 $(document).ready(function () {
     clear()
-    
+  
     $('.alert').alert()
     $('#add').click(function (event) {
         event.preventDefault()
@@ -91,8 +91,14 @@ $(document).ready(function () {
     $('#clear').click(function () {
        clear()
    })
-    
    
+    
+    // When the user clicks on the button, scroll to the top of the document
+    $('#toTOP').click(function () {
+        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0;
+     }
+    )   
 
 })
 
@@ -144,6 +150,7 @@ function createTopics(){
             $(event.target).data('offset' , offset)
         })
         $('#topics').append(topicButton)
+       
     }
 }
 
@@ -152,6 +159,7 @@ function clear(){
     $('#img-cards').empty()
     $('#topics').empty()
     gifCount = 0
+    $("#toTOP").hide()
     createTopics()
  }
 
@@ -166,7 +174,9 @@ var stillImage = _giphyObj.images.fixed_width_still.url,
     id = _giphyObj.id
     //downloadurl = _giphyObj.url
 var photoFlip = $('<div>')
-$(photoFlip).addClass('flip-photo').addClass('col-m-4').attr('id','photo_'+gifCount.toString())
+    $(photoFlip).addClass('flip-photo')
+        .addClass('shadow')
+        .attr('id', 'photo_' + gifCount.toString())
     //     <div class="flip-photo-inner">
    
         
@@ -222,10 +232,14 @@ $(backRating).addClass('sharpie-back')
 //<p class="sharpie">Download Now</p>
 var backDwnLink = $('<p>')
 $(backDwnLink).addClass('sharpie-back')
-var dwnLink = $('<a>')
+    var dwnLink = $('<a>')
+    $(dwnLink).attr('download')
+    $(dwnLink).attr('href', '#')
+    $(dwnLink).attr('onclick', 'this.href = "'+link+'"')
+    
+    
     $(dwnLink).addClass('download')
-    $(dwnLink).attr('download', id+'.gif')
-$(dwnLink).attr('href',link)
+    
 $(dwnLink).text('Download Now')
 $(backDwnLink).append(dwnLink)       
 $(photoBack).append(backTitle).append(backRating).append(backDwnLink)
@@ -261,7 +275,7 @@ function search(_q,_rating,_limit,_offset) {
     var ep = new endPoints()
     //This checks the PRODUCTION const to see if we are testing or not to determine weather or not to use HTTP or HTTPS
     var proto = location.protocol
-    if (proto != 'https:' && proto != 'http:') {
+    if (proto === 'file:') {
         proto = 'http:'
     }
     proto += '//'
@@ -325,7 +339,7 @@ function search(_q,_rating,_limit,_offset) {
                       
                   })
              }
-
+            $("#toTOP").show();
         } else {
             //This is for any errors that my happen. It will display a message with the english version of the message 
             $('#errors').empty()
