@@ -73,14 +73,16 @@ $(document).ready(function () {
     $('.alert').alert()
     $('#add').click(function (event) {
         event.preventDefault()
-       var _name = $('#q').val()
-       var _rating = $('#rating').val()
-       if(_rating === 'all'){
-           _rating = '';
-       }
-        var newTopic = {name: _name, rating: _rating, currentPage:0}
-        topics.push(newTopic)
-        createTopics()
+        var _name = $('#q').val().trim()
+        if (_name != '') {
+            var _rating = $('#rating').val()
+            if (_rating === 'all') {
+                _rating = '';
+            }
+            var newTopic = { name: _name, rating: _rating, currentPage: 0 }
+            topics.push(newTopic)
+            createTopics()
+        }
     })
     $('.sharpie-back').click(function(event){
         if($(event.target).children('a')){
