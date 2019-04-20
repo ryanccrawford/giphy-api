@@ -234,10 +234,10 @@ $(backRating).addClass('sharpie-back')
 //<p class="sharpie">Download Now</p>
 var backDwnLink = $('<p>')
 $(backDwnLink).addClass('sharpie-back')
-    var dwnLink = $('<a>')
-    $(dwnLink).attr('download')
-    $(dwnLink).attr('href', '#')
-    $(dwnLink).attr('onclick', 'this.href = "'+link+'"')
+    var dwnLink = $('<a download>')
+   // $(dwnLink).attr('download')
+    $(dwnLink).attr('href', link)
+   // $(dwnLink).attr('onclick', 'this.href = "'+link+'"')
     
     
     $(dwnLink).addClass('download')
