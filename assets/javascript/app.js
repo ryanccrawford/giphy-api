@@ -252,11 +252,10 @@ function createPhoto(_giphyObj) {
     //<p class="sharpie">Download Now</p>
     var backDwnLink = $('<p>')
     $(backDwnLink).addClass('sharpie-back')
-    var dwnLink = $('<a>')
+    var dwnLink = $('<a download>')
     $(dwnLink).addClass('download')
-    $(dwnLink).attr('download', id + '.gif')
     $(dwnLink).attr('href', link)
-    $(dwnLink).text('Download Now')
+    $(dwnLink).text('Download Image')
     $(backDwnLink).append(dwnLink)
     $(photoBack).append(backTitle).append(backRating).append(backDwnLink)
     $(photoFrame).append(photoBack)
