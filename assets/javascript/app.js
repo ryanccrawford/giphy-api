@@ -173,7 +173,7 @@ var stillImage = _giphyObj.images.fixed_width_still.url,
     link = animatedImage,
     title = _giphyObj.title,
     rating = _giphyObj.rating,
-    id = _giphyObj.id
+   // id = _giphyObj.id
     //downloadurl = _giphyObj.url
 var photoFlip = $('<div>')
     $(photoFlip).addClass('flip-photo')
