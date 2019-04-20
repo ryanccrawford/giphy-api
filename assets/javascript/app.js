@@ -261,7 +261,7 @@ function search(_q,_rating,_limit,_offset) {
     var ep = new endPoints()
     //This checks the PRODUCTION const to see if we are testing or not to determine weather or not to use HTTP or HTTPS
     var proto = location.protocol
-    if (proto != 'https:' || proto != 'http:') {
+    if (proto != 'https:' && proto != 'http:') {
         proto = 'http:'
     }
     proto += '//'
