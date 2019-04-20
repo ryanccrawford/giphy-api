@@ -1,89 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <meta http-equiv="X-UA-Compatible" content="ie=edge">
    <link rel="stylesheet" href="assets/css/resets.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
    <link rel="stylesheet" href="assets/css/style.css">
    <title>Polaroid Giphy</title>
 </head>
+
 <body>
    <div class="container ">
-      
-       <span class="display-1 text-white">Polaroid Giphy</span> <span class="text-primary heading">Animated gifs polaroid style. </span>
-         
-     
-         <div class="row mt2">
+
+      <span class="display-1 text-white">Polaroid Giphy</span> <span class="text-primary heading">Animated gifs polaroid
+         style. </span>
+
+
+      <div class="row mt2">
          <div id="errors">
-               
+
          </div>
       </div>
       <div class="row">
-   
+
       </div>
       <div class="row mt-2">
          <div class="col-xl-12">
-           <form id="searchForm">
-            <div class="form-group text-white heading">
+            <form id="searchForm">
+               <div class="form-group text-white heading">
                   <label for="q">Topic, subject or phrase</label>
-                  <input type="text" class="form-control" name="q" id="q" data-toggle="tooltip" data-placement="top" title="Enter a term or subject">
-            </div>
-            <div class="form-group text-white heading">
-               <label for="Limit">Limit</label>
-              <input type="number" class="form-control" name="limit" id="limit" value=10 max="25" min="1" data-toggle="tooltip" data-placement="top" title="Enter the max number of returned gifs. Max is 25"> 
-         
-            </div>  
-            <div class="form-check text-white heading">
-              <label class="form-check-label">
-                <input type="checkbox" class="form-check-input" name="trend" id="trend" value="trend" data-toggle="tooltip" data-placement="top" title="If checked, the search will be preformed on only the top trending images">
-                Show trending polaroids only.
-              </label>
-            </div>    
-            <div class="row">
-               <div class="form-group col text-right text-white heading">
-                  <button type="submit" id="add" data-name="add" class="btn circle btn-primary" data-toggle="tooltip"
-                     data-placement="top" title="Click to add topic."><i class="fa fa-plus"
-                        aria-hidden="true"></i></button>
+                  <input type="text" class="form-control" name="q" id="q" data-toggle="tooltip" data-placement="top"
+                     title="Enter a term or subject">
+               </div>
+               <div class="form-group text-white heading">
+                  <label for="Limit">Limit</label>
+                  <input type="number" class="form-control" name="limit" id="limit" value=10 max="25" min="1"
+                     data-toggle="tooltip" data-placement="top"
+                     title="Enter the max number of returned gifs. Max is 25">
+
+               </div>
+               <div class="form-check text-white heading">
+                  <label class="form-check-label">
+                     <input type="checkbox" class="form-check-input" name="trend" id="trend" value="trend"
+                        data-toggle="tooltip" data-placement="top"
+                        title="If checked, the search will be preformed on only the top trending images">
+                     Show trending polaroids only.
+                  </label>
+               </div>
+               <div class="row">
+                  <div class="form-group col text-right text-white heading">
+                     <button type="submit" id="add" data-name="add" class="btn circle btn-primary" data-toggle="tooltip"
+                        data-placement="top" title="Click to add topic."><i class="fa fa-plus"
+                           aria-hidden="true"></i></button>
                      <button id="clear" data-name="clear" class="btn btn-primary" data-toggle="tooltip"
                         data-placement="top" title="Clear Everything">Reset</button>
                   </div>
-            </div>     
-            
-         </form>
+               </div>
+
+            </form>
          </div>
       </div>
       <div class="row mt-2">
-            <div class="col-xl-12 mb-2">
-                <div class="alert alert-success alert-dismissible fade show shadow" role="alert">
-                   <strong>HINT:</strong> Click on a topic below to start. Or add some of your own by entering a topic then clicking the add button. <br>To see the animation hold your mouse over the picture.<br>
-                   To stop move your mouse away.<br>
-                   To download a gif, click on a Polaroid to flip it over, on the back you'll find a link to download
-                   the image.
-                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                       <span aria-hidden="true">&times;</span>
-                     </button>
-                   </div>
-               </div>
-            <div id="topics" class="col-xl-12 mt-2">
-               
+         <div class="col-xl-12 mb-2">
+            <div class="alert alert-success alert-dismissible fade show shadow" role="alert">
+               <strong>HINT:</strong> Click on a topic below to start. Or add some of your own by entering a topic then
+               clicking the add button. <br>To see the animation hold your mouse over the picture.<br>
+               To stop move your mouse away.<br>
+               To download a gif, click on a Polaroid to flip it over, on the back you'll find a link to download
+               the image.
+               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+               </button>
             </div>
+         </div>
+         <div id="topics" class="col-xl-12 mt-2">
+
+         </div>
       </div>
       <div class="container-fluid mt-2">
          <div id="paginationArea"></div>
          <div id="img-cards" class="row d-flex justify-content-center">
-            
+
          </div>
          <button class="btn" id="toTOP">Top</button>
       </div>
    </div>
-   
+
    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
    <script src="assets/javascript/app.js"></script>
 </body>
-</html>
 
+</html>
