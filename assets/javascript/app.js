@@ -82,9 +82,32 @@ var gifCount = 0,
     }
 
 // init. when the page is loaded we can then start the app
+var allOffset = 0
 $(document).ready(function () {
     clear()
+    $('#searchAllTopics').click(function (event) {
+        if (topics.length > 0) {
+            q =''
+            topics.forEach(function (item) {
+                 q += " " + item
 
+            })
+            q = q.trim();
+
+             
+                 rating = ''
+            
+             
+             var l = $('#limit').val()
+             if (l > 25 || l < 1) {
+                 l = 10
+                 $('#limit').val(10)
+             }
+            search(q, rating, l, allOffset)
+           allOffset++
+        
+        }
+    })
     $('.alert').alert()
     $('#add').click(function (event) {
         event.preventDefault()

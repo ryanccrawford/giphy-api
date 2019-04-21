@@ -117,6 +117,7 @@ body {
 .heading {
     font-size: 20px;
     font-weight: bolder;
+    white-space: nowrap;
 }
 
 .circle {
